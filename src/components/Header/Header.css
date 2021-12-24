@@ -1,0 +1,11 @@
+.header-container img{
+    width: 180px;
+}
+.header-container{
+    text-align: center;
+    padding: 10px;
+}
+.navbar:hover{
+    background-color: lightgray;
+    border-radius: 5px;
+}

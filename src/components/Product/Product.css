@@ -1,0 +1,19 @@
+
+
+.details{
+    border-bottom: 2px solid lightgray;
+    padding: 5px;
+}
+.description h4{
+    color: blue;
+    font-weight: 400;
+}
+.icons{
+    color: 1px solid goldenrod;
+}
+.feature{
+    font-weight: 700;
+}
+p{
+    font-weight: 650;
+}
