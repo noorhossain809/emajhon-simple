@@ -11,15 +11,21 @@ import {
 import Review from './components/Review/Review';
 import Inventory from './components/Inventory/Inventory';
 import ProductDetail from './components/ProductDetails/ProductDetail';
-import { useState } from 'react';
+import { useState,createContext } from 'react';
 import Login from './components/Login/Login';
+import PrivateRoute from './components/PrivateRoute/PrivateRoute';
+import Shipment from './components/Shipment/Shipment';
+
+export const UserContext = createContext()
 
 function App() {
+  const [loggedInUser, setLoggedInUser] = useState({})
   const [cart, setCart] = useState([])
   return (
-    <div>
-      <Header cart={cart}></Header>
+    <UserContext.Provider value={[loggedInUser, setLoggedInUser]}>
+      <h3>Email: {loggedInUser.email}</h3>
       <Router>
+      <Header cart={cart}></Header>
         <Switch>
           <Route path="/shop">
           <Shop></Shop>
@@ -27,22 +33,26 @@ function App() {
           <Route path="/review">
             <Review></Review>
           </Route>
-          <Route path="/inventory">
+          <PrivateRoute path="/inventory">
             <Inventory></Inventory>
-          </Route>
+          </PrivateRoute>
           <Route path="/product/:key">
             <ProductDetail></ProductDetail>
           </Route>
           <Route path="/login">
             <Login></Login>
           </Route>
+          <PrivateRoute path="/shipment">
+            <Shipment></Shipment>
+          </PrivateRoute>
           <Route exact path="/">
           <Shop cart={cart} setCart={setCart}></Shop>
           </Route>
+          
           </Switch>
       </Router>
       
-    </div>
+    </UserContext.Provider>
   );
 }
 

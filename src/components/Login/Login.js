@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { initializeApp } from "firebase/app";
 import {
   createUserWithEmailAndPassword,
@@ -25,8 +25,19 @@ import {
   InputLabel,
   OutlinedInput,
 } from "@mui/material";
+import { UserContext } from "../../App";
+import { useHistory, useLocation } from "react-router-dom/cjs/react-router-dom.min";
+
 
 const Login = () => {
+const [loggedInUser, setLoggedInUser] = useContext(UserContext)
+
+let history = useHistory();
+let location = useLocation();
+
+
+let { from } = location.state || { from: { pathname: "/" } };
+
   const [values, setValues] = React.useState({
     amount: "",
     password: "",
@@ -80,6 +91,8 @@ const Login = () => {
           email: email,
         };
         setUsers(signedInUser);
+        setLoggedInUser(signedInUser)
+        history.replace(from);
         console.log(signedInUser);
         // ...
       })
@@ -128,11 +141,11 @@ const Login = () => {
     }
   };
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = (e) => {
     if (newUser && users.email && users.password) {
       const auth = getAuth();
       createUserWithEmailAndPassword(auth, users.email, users.password)
-        .then((res) => {
+        .then(res => {
           // Signed in
           const newUserInfo = { ...users };
           newUserInfo.error = "";
@@ -147,32 +160,37 @@ const Login = () => {
           setUsers(newUserInfo);
         });
     }
+
+    if (!newUser && users.email && users.password) {
+      const auth = getAuth();
+      signInWithEmailAndPassword(auth, users.email, users.password)
+        .then((res) => {
+          console.log(res)
+          const newUserInfo = {...users};
+          newUserInfo.error = "";
+          newUserInfo.success = true;
+          setUsers(newUserInfo);
+          setLoggedInUser(newUserInfo)
+          console.log(newUserInfo)
+        })
+        .catch((error) => {
+          const newUserInfo = { ...users };
+          newUserInfo.error = error.message;
+          newUserInfo.success = false;
+          setUsers(newUserInfo);
+          console.log(error)
+        });
+    }
+    e.preventDefault()
   };
 
-  if (!newUser && users.email && users.password) {
-    const auth = getAuth();
-    signInWithEmailAndPassword(auth, users.email && users.password)
-      .then((res) => {
-        const newUserInfo = { ...users };
-        newUserInfo.error = "";
-        newUserInfo.success = true;
-        setUsers(newUserInfo);
-      })
-      .catch((error) => {
-        const newUserInfo = { ...users };
-        newUserInfo.error = error.message;
-        newUserInfo.success = false;
-        setUsers(newUserInfo);
-      });
-  }
+ 
 
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   return (
     <div className="text-center mt-5">
       <div>
         <h2>This is login page</h2>
-        <h3>{users.name}</h3>
-        <p>{users.email}</p>
         <br />
         <form onSubmit={handleFormSubmit}>
           <Checkbox
@@ -273,7 +291,7 @@ const Login = () => {
 
         
       </div>
-      {users.success && <p>User {newUser ?'created' : 'Logged in' } successfully</p>}
+      {users.success && <p color="success">User {newUser ?'created' : 'Logged in' } successfully</p>}
     </div>
   );
 };

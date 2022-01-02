@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Button } from 'react-bootstrap';
+
 
 const Inventory = () => {
+    const product = {}
+
+    const handleClick = () => {
+        fetch('http://localhost:5000/addProducts', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify(product)
+        })
+        
+    }
+        
+   
     return (
         <div>
-            <h2>This is inventory</h2>
+            <Button variant="primary" onClick={handleClick}>Add Product</Button>
         </div>
     );
 };
